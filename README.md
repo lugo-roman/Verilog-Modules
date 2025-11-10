@@ -3,18 +3,14 @@ A collection of Verilog modules for digital design and FPGA development. Include
 
 ### Full Adder
 
-**Descripción:**  
-Módulo combinacional que realiza la suma de tres bits (dos operandos y un acarreo de entrada). Genera una salida de suma (`sum`) y un acarreo de salida (`cout`).
+**Description:**  
+Combinational module that performs the addition of three binary inputs (two operands and one carry input). It produces a sum (`sum`) and a carry output (`cout`).
 
-**Entradas:**  
-- `a`: Primer bit de entrada.  
-- `b`: Segundo bit de entrada.  
-- `cin`: Bit de acarreo de entrada.
+**Inputs:**  
+- `a`: First input bit.  
+- `b`: Second input bit.  
+- `cin`: Carry input bit.
 
-**Salidas:**  
-- `sum`: Resultado de la suma de los tres bits de entrada.  
-- `cout`: Acarreo resultante de la operación.
-
-**Ecuaciones lógicas:**  
-- `sum  = a ^ b ^ cin`  
-- `cout = (a & b) | (a & cin) | (b & cin)`
+**Outputs:**  
+- `sum`: Result of the addition of the three input bits.  
+- `cout`: Carry output of the operation.
