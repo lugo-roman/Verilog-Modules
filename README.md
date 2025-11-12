@@ -1,6 +1,10 @@
 # Verilog-Modules
 A collection of Verilog modules for digital design and FPGA development. Includes reusable building blocks for learning, experimentation, and hardware projects.
 
+## Note. 
+
+- the following modules are not working yet: demux and register_bank
+
 ## 1. Full Adder
 
 **Description:**  

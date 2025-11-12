@@ -1,0 +1,49 @@
+Shift_reg
+
++--------------+---------------------------------------------------------------+
+| Port / Param | Description                                                   |
++--------------+---------------------------------------------------------------+
+| Parameter WIDTH | Number of bits in the register (default = 8)               |
+| Parameter DIR   | Shift direction: 0 = right, 1 = left                       |
++--------------+---------------------------------------------------------------+
+| clk          | Clock input, shifts occur on rising edge                      |
+| rst          | Synchronous active-high reset (clears the register)           |
+| en           | Enable input, allows shifting when high                      |
+| load         | Loads parallel data (par_in) into register when high          |
+| par_in[W-1:0]| Parallel input data bus                                       |
+| serial_in    | Serial bit input for shifting                                 |
+| q[W-1:0]     | Parallel register output (current contents)                   |
+| serial_out   | Serial bit shifted out (LSB or MSB, depends on DIR)           |
++--------------+---------------------------------------------------------------+
+| Operation    | Description                                                   |
++--------------+---------------------------------------------------------------+
+| rst = 1      | Clears all bits to 0                                          |
+| load = 1     | Loads par_in into q                                           |
+| en = 1, DIR=0| Shift right: MSB <= serial_in, LSB -> serial_out              |
+| en = 1, DIR=1| Shift left:  LSB <= serial_in, MSB -> serial_out              |
++--------------+---------------------------------------------------------------+
+
+Shift_reg_universal
+
++--------------+---------------------------------------------------------------+
+| Port / Param | Description                                                   |
++--------------+---------------------------------------------------------------+
+| Parameter WIDTH | Number of bits in the register (default = 8)               |
++--------------+---------------------------------------------------------------+
+| clk          | Clock input, shifts occur on rising edge                      |
+| rst          | Synchronous active-high reset                                 |
+| mode[1:0]    | Control input: selects operation mode                         |
+| par_in[W-1:0]| Parallel input data bus                                       |
+| serial_in_L  | Serial bit input (used for shift-left operation)              |
+| serial_in_R  | Serial bit input (used for shift-right operation)             |
+| q[W-1:0]     | Parallel register output                                      |
+| serial_out_L | Bit shifted out from MSB (during left shift)                  |
+| serial_out_R | Bit shifted out from LSB (during right shift)                 |
++--------------+---------------------------------------------------------------+
+| mode value   | Operation                                                     |
++--------------+---------------------------------------------------------------+
+| 00           | Hold current value                                            |
+| 01           | Shift right (serial_in_R enters MSB, LSB -> serial_out_R)     |
+| 10           | Shift left  (serial_in_L enters LSB, MSB -> serial_out_L)     |
+| 11           | Load parallel input (q <= par_in)                             |
++--------------+---------------------------------------------------------------+

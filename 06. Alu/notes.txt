@@ -1,0 +1,46 @@
++-------------------+-------------------------------------------------------------+
+| Module            | alu_simple                                                 |
++-------------------+-------------------------------------------------------------+
+| Description       | Parametric combinational ALU with four operations:          |
+|                   | ADD, SUB, AND, OR.                                          |
+|                   | Includes basic status flags (Zero, Negative, Carry, Borrow) |
+|                   | Fully synthesizable on any FPGA.                            |
++-------------------+-------------------------------------------------------------+
+| Parameter         | Description                                                 |
++-------------------+-------------------------------------------------------------+
+| WIDTH             | Bit width of operands and result (default = 8)              |
++-------------------+-------------------------------------------------------------+
+| Port / Signal     | Direction | Width | Description                             |
++-------------------+------------+--------+---------------------------------------+
+| clk (optional)    | —          | —      | Not used (pure combinational logic)   |
+| a                 | input      | WIDTH  | Operand A                             |
+| b                 | input      | WIDTH  | Operand B                             |
+| op                | input      | 2      | Operation select code                 |
+| y                 | output reg | WIDTH  | Operation result                      |
+| z                 | output reg | 1      | Zero flag (1 when y == 0)             |
+| n                 | output reg | 1      | Negative flag (MSB of result)         |
+| c                 | output reg | 1      | Carry flag (valid for ADD/SUB)        |
+| bflag             | output reg | 1      | Borrow flag (valid for SUB only)      |
++-------------------+------------+--------+---------------------------------------+
+| Operation Codes   | Binary | Mnemonic | Description                            |
++-------------------+--------+-----------+---------------------------------------+
+| OP_ADD            | 00     | ADD       | y = a + b; carry flag set if overflow  |
+| OP_SUB            | 01     | SUB       | y = a - b; borrow = ~carry            |
+| OP_AND            | 10     | AND       | y = a & b                             |
+| OP_OR             | 11     | OR        | y = a | b                             |
++-------------------+--------+-----------+---------------------------------------+
+| Status Flags      | Description                                                 |
++-------------------+-------------------------------------------------------------+
+| Z (Zero)          | 1 when y == 0                                              |
+| N (Negative)      | Copy of MSB of y (sign bit)                                |
+| C (Carry)         | Carry out from ADD or adder form of SUB                    |
+| B (Borrow)        | Borrow flag for SUB, 1 when a < b (B = ~C)                 |
++-------------------+-------------------------------------------------------------+
+| Notes             |                                                           |
++-------------------+-------------------------------------------------------------+
+| • Purely combinational — no clock required.                                   |
+| • Synthesizes efficiently into FPGA LUT logic.                                |
+| • Borrow and carry are separate for clarity.                                  |
+| • Can be extended easily with XOR, shifts, etc.                               |
+| • For signed arithmetic, interpretation depends on how a/b are used.          |
++-------------------+-------------------------------------------------------------+

@@ -1,0 +1,12 @@
++----------+--------------------------------------------------------------------------+
+| Signal   | Description                                                              |
++----------+--------------------------------------------------------------------------+
+| clk      | System clock — counter increments on rising edge                         |
+| rst      | Active-high synchronous reset                                            |
+| en       | Enable; when low, counter pauses                                         |
+| q        | Current counter value (N bits)                                           |
+| tc       | Terminal Count — goes high for one clock when counter wraps (used for    |
+|          | triggers or cascaded counters)                                           |
+| N        | Counter bit-width                                                        |
+| MODULO   | The value at which it resets back to 0 (defines the count range)         |
++----------+--------------------------------------------------------------------------+

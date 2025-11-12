@@ -1,0 +1,145 @@
+Moore fsm
+
++-------------------+-------------------------------------------------------------+
+| Module            | fsm_moore                                                  |
++-------------------+-------------------------------------------------------------+
+| Type              | Moore Finite State Machine                                 |
+| Behavior          | Outputs depend ONLY on the current state                   |
+| Reset Type        | Synchronous, active-high                                   |
+| Clock Edge        | Rising edge                                                |
+| Parameter         | W - state register width (default = 2 bits)                |
++-------------------+-------------------------------------------------------------+
+| Port / Signal     | Description                                                |
++-------------------+-------------------------------------------------------------+
+| clk               | System clock input                                         |
+| rst               | Synchronous reset (active-high)                            |
+| in_a, in_b        | Example input signals for state transitions                |
+| out_x, out_y      | Moore outputs (depend only on state)                       |
+| state             | Current FSM state register                                 |
+| state_n           | Next-state combinational signal                            |
++-------------------+-------------------------------------------------------------+
+| Example States    | Description                                                |
++-------------------+-------------------------------------------------------------+
+| S_IDLE (0)        | Initial state, waits for input                             |
+| S_A (1)           | Activated when in_a = 1                                    |
+| S_B (2)           | Activated when in_b = 1                                    |
+| S_ERR (3)         | Safe / error recovery state                                |
++-------------------+-------------------------------------------------------------+
+| Outputs Behavior  | Description                                                |
++-------------------+-------------------------------------------------------------+
+| S_IDLE            | out_x = 0, out_y = 0                                       |
+| S_A               | out_x = 1, out_y = 0                                       |
+| S_B               | out_x = 0, out_y = 1                                       |
+| S_ERR             | out_x = 0, out_y = 0 (safe state)                          |
++-------------------+-------------------------------------------------------------+
+| Notes             |                                                           |
++-------------------+-------------------------------------------------------------+
+| • Moore FSM outputs change only on clock edges.                                |
+| • Use synchronous reset for consistent startup behavior.                       |
+| • Add or remove states via localparam definitions.                             |
+| • Default cases avoid synthesis latches.                                       |
++-------------------+-------------------------------------------------------------+
+
+Mealy fsm
+
++-------------------+-------------------------------------------------------------+
+| Module            | fsm_mealy                                                  |
++-------------------+-------------------------------------------------------------+
+| Type              | Mealy Finite State Machine                                 |
+| Behavior          | Outputs depend on CURRENT STATE and INPUTS                 |
+| Reset Type        | Synchronous, active-high                                   |
+| Clock Edge        | Rising edge                                                |
+| Parameter         | W - state register width (default = 2 bits)                |
++-------------------+-------------------------------------------------------------+
+| Port / Signal     | Description                                                |
++-------------------+-------------------------------------------------------------+
+| clk               | System clock input                                         |
+| rst               | Synchronous reset (active-high)                            |
+| in_a, in_b        | Example input signals controlling transitions              |
+| out_x, out_y      | Mealy outputs (depend on both state and inputs)            |
+| state             | Current FSM state register                                 |
+| state_n           | Next-state combinational signal                            |
++-------------------+-------------------------------------------------------------+
+| Example States    | Description                                                |
++-------------------+-------------------------------------------------------------+
+| S_IDLE (0)        | Waits for activation (in_a = 1 triggers transition)        |
+| S_RUN (1)         | Active state, transitions on in_b or in_a changes          |
+| S_ERR (2)         | Error or recovery state                                    |
++-------------------+-------------------------------------------------------------+
+| Outputs Behavior  | Description                                                |
++-------------------+-------------------------------------------------------------+
+| S_IDLE            | out_x = 1 immediately if in_a = 1 (Mealy behavior)         |
+| S_RUN             | out_x = 1 while running, out_y reacts instantly to in_b    |
+| S_ERR             | out_y = 1 (indicates error)                                |
++-------------------+-------------------------------------------------------------+
+| Notes             |                                                           |
++-------------------+-------------------------------------------------------------+
+| • Mealy outputs may react within the same clock cycle as input changes.        |
+| • Use clean, debounced inputs to avoid glitches.                               |
+| • Usually smaller and faster than Moore FSMs.                                 |
+| • Great for control logic where immediate reaction is needed.                  |
+| • For stability, register outputs if driving hardware directly.                |
++-------------------+-------------------------------------------------------------+
+
+
+FSM design tips
+
++------------------------------------------------------------+
+| FSM DESIGN BEST PRACTICES                                  |
++------------------------------------------------------------+
+| 1. Use localparam for named state encoding.                 |
+|    Example: localparam [1:0] S_IDLE=2'b00, S_A=2'b01;      |
+|                                                            |
+| 2. Separate logic sections:                                |
+|    • Sequential block -> updates current state             |
+|    • Combinational block -> computes next state            |
+|    • Optional third block -> drives outputs                |
+|                                                            |
+| 3. Always give default assignments to next-state/output     |
+|    signals to avoid unintended latches.                    |
+|                                                            |
+| 4. Use synchronous reset for FPGAs.                        |
+|                                                            |
+| 5. For speed-critical designs, try one-hot encoding.       |
+|    Example: S_IDLE=3'b001, S_A=3'b010, S_B=3'b100          |
+|                                                            |
+| 6. Document state transitions in a table or diagram.       |
+|                                                            |
+| 7. Simulate with a testbench before synthesis.             |
++------------------------------------------------------------+
+
+Moore FSM – Example State Transition Table
+
++-----------+-------------+-------------------------+-----------------+--------------------+
+| Current   | Input(s)    | Condition               | Next State      | Output(s) (Moore)  |
++-----------+-------------+-------------------------+-----------------+--------------------+
+| S_IDLE    | in_a = 1    | Start condition A       | S_A             | out_x=1, out_y=0   |
+| S_IDLE    | in_b = 1    | Start condition B       | S_B             | out_x=0, out_y=1   |
+| S_IDLE    | none        | Idle                    | S_IDLE          | out_x=0, out_y=0   |
++-----------+-------------+-------------------------+-----------------+--------------------+
+| S_A       | in_b = 1    | Switch to B             | S_B             | out_x=1, out_y=0   |
+| S_A       | in_a = 0    | Return to idle          | S_IDLE          | out_x=0, out_y=0   |
+| S_A       | otherwise   | Hold                    | S_A             | out_x=1, out_y=0   |
++-----------+-------------+-------------------------+-----------------+--------------------+
+| S_B       | in_a = 1    | Switch to A             | S_A             | out_x=0, out_y=1   |
+| S_B       | in_b = 0    | Return to idle          | S_IDLE          | out_x=0, out_y=0   |
+| S_B       | otherwise   | Hold                    | S_B             | out_x=0, out_y=1   |
++-----------+-------------+-------------------------+-----------------+--------------------+
+| S_ERR     | any         | Recovery / error        | S_IDLE          | out_x=0, out_y=0   |
++-----------+-------------+-------------------------+-----------------+--------------------+
+
+Mealy FSM – Example State Transition Table
+
++-----------+---------------------+-----------------------------+-----------------+----------------------+
+| Current   | Input(s)            | Condition                   | Next State      | Output(s) (Mealy)    |
++-----------+---------------------+-----------------------------+-----------------+----------------------+
+| S_IDLE    | in_a = 1            | Start condition             | S_RUN           | out_x=1 (same cycle) |
+| S_IDLE    | in_a = 0            | Remain idle                 | S_IDLE          | out_x=0, out_y=0     |
++-----------+---------------------+-----------------------------+-----------------+----------------------+
+| S_RUN     | in_b = 1            | Error detected              | S_ERR           | out_y=1 (same cycle) |
+| S_RUN     | in_a=0, in_b=0      | Stop condition              | S_IDLE          | out_x=0, out_y=0     |
+| S_RUN     | otherwise           | Continue running            | S_RUN           | out_x=1, out_y=0     |
++-----------+---------------------+-----------------------------+-----------------+----------------------+
+| S_ERR     | in_b = 0            | Clear error condition       | S_IDLE          | out_y=1 (until reset)|
+| S_ERR     | in_b = 1            | Hold in error               | S_ERR           | out_y=1              |
++-----------+---------------------+-----------------------------+-----------------+----------------------+

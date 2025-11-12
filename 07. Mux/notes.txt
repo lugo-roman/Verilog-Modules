@@ -1,0 +1,12 @@
++-----------+-----------------------------------------------------------+
+ Parameter  Description                                               
++-----------+-----------------------------------------------------------+
+ WIDTH      Number of bits per input signal                           
+ N          Number of input channels to select from                   
++-----------+-----------------------------------------------------------+
+ Port       Description                                               
++-----------+-----------------------------------------------------------+
+ data[]     Input array N elements, each WIDTH bits wide             
+ sel        Select line (log2(N) bits)                                
+ y          Output bus (WIDTH bits wide)                              
++-----------+-----------------------------------------------------------+
